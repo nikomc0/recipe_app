@@ -18,8 +18,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /*align-items: center;*/
+  /*justify-content: center;*/
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -35,4 +35,77 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+html, body {
+  background-color: #282c34;
+}
+
+h1, h2, h3 {
+  font-family: 'Arimo', sans-serif;
+  font-weight: 500;
+}
+
+h4, h5, h6 {
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+}
+
+p {
+  font-family: 'Arimo', sans-serif;
+  /*font-size: 1rem;*/
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  font-family: 'Arimo', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+a:link, a:hover, a:visited, a:active, a:focus {
+  text-decoration: none;
+  color: black;
+}
+
+div[id^=recipe-card-]:hover {
+  background-color: #EFEFEF;
+}
+
+/*#main-recipe:hover {
+  background-color: #EFEFEF;
+}
+*/
+
+.left-border {
+  border-left: 10px solid #3D528E !important;
+}
+
+.icon {
+  width: 17px;
+  height: 17px;
+}
+
+
+.custom-control-label {
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  font-size: 1rem !important;
+}
+
+.card-title {
+  margin-top: 4px;
+  margin-bottom: 4px !important;
+}
+
+.btn-theme {
+  color: white !important;
+  background-color: #3D528E !important;
+}
+
+.recipe-form {
+  margin-top: 10px !important;
 }
