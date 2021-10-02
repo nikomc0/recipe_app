@@ -32,7 +32,7 @@ class RecipeList extends Component {
 		var values = [];
 
 		this.state.selected.map((x) => {
-			values.push(x.id)
+			return values.push(x.id)
 		})
 
 		var ingredientsList = api.getRecipeIngredients(values);
@@ -40,26 +40,22 @@ class RecipeList extends Component {
 	}
 
 	selectRecipe(id, event) {
-		var recipe = this.state.recipes.find((recipe) => recipe.id === id)
+		var recipe = this.state.recipes.find((recipe) => recipe.id === id);
 
 		var element = document.getElementById(`recipe-card-${id}`)
-		
-		var checked = element.dataset.checked;
+
+		var recipes = [...this.state.recipes];
 
 		if (element.dataset.checked === "false") {
-			var recipes = [...this.state.recipes];
 			recipe.selected = true
 			this.setState({recipes});
-
 			this.updateSelected(recipe);
 
 			element.classList.add("left-border");
 			element.dataset.checked = "true";
 		} else {
-			var recipes = [...this.state.recipes];
 			recipe.selected=false
 			this.setState({recipes});
-
 			this.updateSelected(recipe);
 
 			element.classList.remove("left-border");

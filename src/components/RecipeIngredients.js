@@ -6,14 +6,6 @@ class RecipeIngredients extends Component {
 		// this.parseIngredients();
 	}
 
-	parseIngredients(){
-		var allIngredients = [];
-
-		this.props.selectedIngredients.map((ingredient) => {
-			console.log(ingredient.ingredients)
-		});
-	}
-
 	render(){
 		if (this.props.selectedIngredients.length === 0) {
 			var recipeAlert = <div className="alert alert-warning w-50" role="alert">

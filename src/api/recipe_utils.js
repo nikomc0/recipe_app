@@ -44,7 +44,8 @@ api.getRecipeIngredients = function(values){
 		if (values.includes(x.recipe_id)) {
 			ingredients.push(x)
 		}
-	})
+		return ingredients
+	});
 
 	return ingredients
 }
