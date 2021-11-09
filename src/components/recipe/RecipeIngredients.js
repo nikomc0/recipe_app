@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import IngredientButton from '../IngredientButton';
 import api from '../../api/recipe_utils';
-import {ToggleButtonGroup, Button, ToggleButton} from 'react-bootstrap'
+import {ToggleButtonGroup, ToggleButton} from 'react-bootstrap'
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class RecipeIngredients extends Component {
