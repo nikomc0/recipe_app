@@ -1,15 +1,25 @@
 import React from 'react';
+import { Route, Switch, withRouter } from "react-router-dom"
 import Main from './components/Main'
-// import { BrowserRouter, Route, Link } from "react-router-dom";
+import RecipeCreate from './components/recipe/RecipeCreate'
+import Nav from './components/Nav'
 
 import './App.css';
 
 function App() {
   return (
     <div className="App-header">
-      <Main />
+      <Nav />
+      <Switch>
+        <Route path="/new-recipe">
+          <RecipeCreate />
+        </Route>
+        <Route path="/">
+          <Main />
+        </Route>
+      </Switch>
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);

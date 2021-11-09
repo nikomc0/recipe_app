@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import RecipeList from './RecipeList'
 import RecipeIngredients from '../RecipeIngredients'
 import { Plus } from 'react-feather';
@@ -20,9 +21,14 @@ class Recipes extends React.Component {
 	}
 
 	handleIngredients(ingredients){
+		this.createRecipe();
+
 		this.setState({
-			ingredientsList: ingredients
-		}, () => console.log(this.state.ingredientsList));
+			ingredientsList: ingredients,
+		});
+	}
+
+	createRecipe(){
 	}
 
 	render(){
@@ -43,11 +49,12 @@ class Recipes extends React.Component {
 								<p> Recipes </p>
 							</div>
 							<div className="col">
-								<Plus />
+								<Link to="/new-recipe" style={{color: 'white'}}>
+									<Plus />
+								</Link >
 							</div>
 						</div>
 						<RecipeList
-							setSelected={this.handleSelected}
 							setIngredients={(items) => this.handleIngredients(items)}
 						/>
 					</div>

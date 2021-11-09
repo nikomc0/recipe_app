@@ -12,6 +12,13 @@ const List = [
 	{id: 10, name: 'Pizza', selected: false},
 ];
 
+const Ingredients = [
+	{id: 1, name: 'salt'},
+	{id: 2, name: 'cinammon'},
+	{id: 3, name: 'paprika'},
+	{id: 4, name: 'ginger'},
+]
+
 const RecipeIngredients = [
 	{recipe_id: 1, recipe_name: 'spaghetti', ingredients: [
 			{id: 1, name: 'salt'},
@@ -48,6 +55,28 @@ api.getRecipeIngredients = function(values){
 	});
 
 	return ingredients
+}
+
+api.getIngredients = function(){
+	return Ingredients;
+}
+
+api.addIngredient = function(value){
+	var idCounter = 0
+	// Find the last id
+	Ingredients.forEach((x) => {
+		if (x.id > idCounter) {
+			idCounter = x.id
+		}
+	});
+
+	// Increment idCounter
+	idCounter += 1
+	// create the ingredient object
+	Ingredients.push({id: idCounter, name: value})
+
+	// return the full ingredient object with name and id
+	return idCounter
 }
 
 export default api;

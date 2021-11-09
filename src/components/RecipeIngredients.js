@@ -1,37 +1,43 @@
-import React, { Component } from'react'
-import IngredientCard from './IngredientCard'
+import React, { Component } from "react";
+import IngredientCard from "./IngredientCard";
 
 class RecipeIngredients extends Component {
-	componentDidMount(){
-		// this.parseIngredients();
-	}
+    componentDidMount() {
+        // this.parseIngredients();
+    }
 
-	render(){
-		if (this.props.selectedIngredients.length === 0) {
-			var recipeAlert = <div className="alert alert-warning w-50" role="alert">
-					<h5>Please Select A Recipe.</h5>
-				</div>
-		} else {
-		}
+    render() {
+        let recipeAlert;
+        if (this.props.selectedIngredients.length === 0) {
+            recipeAlert = <div className="alert alert-warning w-50" role="alert">
+                Please Select A Recipe.
+            </div>
+        }
 
-		const recipes = this.props.selectedIngredients.map((recipe) => {
-			return <IngredientCard key={recipe.id} id={recipe.id} ingredients={recipe.ingredients} recipeName={recipe.recipe_name}/>
-		});
+        const recipes = this.props.selectedIngredients.map((recipe) => {
+            return (
+                <IngredientCard
+                    key={recipe.id}
+                    id={recipe.id}
+                    ingredients={recipe.ingredients}
+                    recipeName={recipe.recipe_name}
+                />
+            );
+        });
 
-		return(
-			<div className="col">
-				<h3>List of Ingredients</h3>
-				<p>for selected recipes</p>
-				
-				{recipeAlert}
+        return (
+            <div className="col">
+                <h3>List of Ingredients</h3>
+                <h6>for selected recipes</h6>
 
-				<div className="row row-cols-1 row-cols-md-3 g-4">
-					{recipes}
-				</div>
-			</div>
+                <div className="gap-3">{recipeAlert}</div>
 
-		)
-	}
+                <div className="row row-cols-1 row-cols-md-3 g-4">
+                    {recipes}
+                </div>
+            </div>
+        );
+    }
 }
 
 export default RecipeIngredients;

@@ -1,0 +1,22 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "airbnb",   
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 13
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+    }
+}

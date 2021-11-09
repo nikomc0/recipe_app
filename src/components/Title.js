@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 var title = 'Grocery Helper'
 
 class Title extends React.Component {
 
   render() {
-    return <a href="/">{title}</a>;
+    return <Link to="/">{title}</Link>;
   }
 }
 
