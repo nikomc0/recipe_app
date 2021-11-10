@@ -13,10 +13,10 @@ const List = [
 ];
 
 const Ingredients = [
-	{id: 1, name: 'salt'},
-	{id: 2, name: 'cinammon'},
-	{id: 3, name: 'paprika'},
-	{id: 4, name: 'ginger'},
+	{id: 1, name: 'salt', addedToRecipe: false},
+	{id: 2, name: 'cinammon', addedToRecipe: false},
+	{id: 3, name: 'paprika', addedToRecipe: false},
+	{id: 4, name: 'ginger', addedToRecipe: false},
 ]
 
 const RecipeIngredients = [

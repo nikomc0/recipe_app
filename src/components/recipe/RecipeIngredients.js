@@ -51,26 +51,36 @@ class RecipeIngredients extends Component {
   }
 
   addExistingIngredientToRecipe(ingredient) {
-    var currentIngredients = [...this.state.currentIngredients];
+    var ingredientToSet = this.findIngredient(this.state.ingredients, ingredient);
+    // 1. Make a shallow copy of the items
+    let ingredients = [...this.state.ingredients];
 
-    var ingredientToSet = this.findIngredient(ingredient)
+    // 2. Make a shallow copy of the item you want to mutate
+    let ing = {...ingredients[ingredientToSet.index]};
 
-    currentIngredients.push(ingredientToSet)
+    // 3. Replace the property you're intested in
 
-    this.setState({currentIngredients: currentIngredients})
+    ing.addedToRecipe = !ing.addedToRecipe;
+
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    ingredients[ingredientToSet.index] = ing;
+
+    // 5. Set the state to our new copy
+    this.setState({ingredients});
   }
 
-  findIngredient(ingredient) {
+  findIngredient(array, ingredient) {
     let value;
+    let index;
 
-    this.state.ingredients.forEach((x) => {
-      console.log({x})
+    array.forEach((x, i) => {
       if (x && x.id && x.name === ingredient) {
-        value = x
+        value = x;
+        index = i;
       }
     })
 
-    return value
+    return {value, index}
   }
 
   handleIngredientChange(event) {
@@ -80,9 +90,11 @@ class RecipeIngredients extends Component {
   }
 
   render(){
-    var currentIngredients = this.state.currentIngredients.map((ingredient, index) => {
-      return <li key={index}> {ingredient.name}</li>
-    });
+    var currentIngredients = this.state.ingredients
+      .filter((ingredient) => ingredient.addedToRecipe === true)
+      .map((ingredient) => {
+        return <li key={ingredient.id}> {ingredient.name}</li>
+      });
 
     const ingredients = this.state.ingredients.map((ingredient) => {
       return (
