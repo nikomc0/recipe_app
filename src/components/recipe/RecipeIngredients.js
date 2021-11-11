@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Container, Row } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
-import {ToggleButtonGroup, ToggleButton} from 'react-bootstrap'
+import {ToggleButtonGroup, ToggleButton, ButtonToolbar} from 'react-bootstrap'
+import axios from 'axios'
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class RecipeIngredients extends Component {
@@ -18,7 +20,13 @@ class RecipeIngredients extends Component {
   }
 
   componentDidMount(){
-    this.fetchIngredients();
+    axios
+    .get(`http://localhost:9393/ingredients`)
+    .then(response => {
+      const ingredients = response.data;
+      this.setState({ ingredients });
+    })
+    // this.fetchIngredients();
   }
 
   fetchIngredients(){
@@ -73,6 +81,31 @@ class RecipeIngredients extends Component {
     });
   }
 
+  createIngredientGroups() {
+    // debugger;
+    var start = 0;
+    var end   = 9;
+    var list  = this.state.ingredients;
+    var split = Math.ceil(list.length / 10);
+
+    var groups = [];
+
+    for (var i = 0; i < split; i++) {
+        var group = list.slice(start, end);
+
+        var ingredients = group.map((x) => {
+          return <ToggleButton size="sm">{x.name}</ToggleButton>
+        })
+
+        groups.push(ingredients);
+
+        start += 9;
+        end += 9;
+    }
+
+    return groups;
+  }
+
   render(){
     var currentIngredients = this.state.ingredients
       .filter((ingredient) => ingredient.addedToRecipe === true)
@@ -80,27 +113,49 @@ class RecipeIngredients extends Component {
         return <li key={ingredient.id}> {ingredient.name}</li>
       });
 
-    const ingredients = this.state.ingredients.map((ingredient) => {
-      return (
-        <ToggleButton 
-          key={ingredient.id} 
-          id={ingredient.id} 
-          value={ingredient.name} 
-          // onClick={this.addToCurrentRecipe} 
-          onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
-          className="m-1"
-        >{ingredient.name}</ToggleButton>
+    const groups = this.createIngredientGroups();
+
+    const ingredients = groups.map((group) => {
+        console.log(group)
+        return (
+          <Container>
+            <Row>
+              <ToggleButtonGroup type="checkbox">
+                {group}
+              </ToggleButtonGroup>
+            </Row>
+          </Container>
         )
-    }) 
+      })
+      
+    // const ingredients = this.state.ingredients.map((ingredient, index) => {
+
+      // return <ToggleButton />
+      // return (
+        // <ToggleButtonGroup type="checkbox" className="mb-2">
+        //   <ToggleButton 
+        //     key={ingredient.id} 
+        //     id={ingredient.id} 
+        //     value={ingredient.name} 
+        //     // onClick={this.addToCurrentRecipe} 
+        //     onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
+        //     className="m-1"
+        //     size="sm"
+        //   >
+        //     {ingredient.name}
+        //   </ToggleButton>
+        // </ToggleButtonGroup>
+      //   )
+    // }) 
     return(
       <div>
         <div className="container-fluid">
           
           <p>click ingredients to add to recipe</p>
 
-          <ToggleButtonGroup type="checkbox" className="mb-2">
+          <ButtonToolbar aria-label="Toolbar with button groups">
             {ingredients}
-          </ToggleButtonGroup>
+          </ButtonToolbar>
         </div>
 
         <div className="container" style={{'paddingTop': '50px'}}>
