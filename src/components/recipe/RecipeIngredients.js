@@ -35,11 +35,25 @@ class RecipeIngredients extends Component {
   }
 
   addToCurrentRecipe(event){
-    // Create the ingredient on the bakend.
-    api.addIngredient(this.state.newIngredient)
+    var ingredients = [...this.state.ingredients];
+    var ingredient = {
+      'name': this.state.newIngredient,
+      'addedToRecipe' : false
+    };
 
-    // Clear out the now old new ingredient.
-    this.setState({newIngredient: ""})
+    // Create the ingredient on the bakend.
+    axios
+    .post(`http://localhost:9393/ingredients`, { ingredient }, {'Content-Type': 'text/plain'})
+    .then(response => {
+      ingredient.addedToRecipe = true;
+      ingredients.push(ingredient);
+      this.setState({ingredients: ingredients})
+      // Clear out the now old new ingredient.
+      this.setState({newIngredient: ""})
+    })
+    .catch((error)=>{
+       console.log(error);
+    });
   }
 
   addExistingIngredientToRecipe(ingredient) {
@@ -82,7 +96,6 @@ class RecipeIngredients extends Component {
   }
 
   createIngredientGroups() {
-    // debugger;
     var start = 0;
     var end   = 9;
     var list  = this.state.ingredients;
@@ -93,8 +106,19 @@ class RecipeIngredients extends Component {
     for (var i = 0; i < split; i++) {
         var group = list.slice(start, end);
 
-        var ingredients = group.map((x) => {
-          return <ToggleButton size="sm">{x.name}</ToggleButton>
+        var ingredients = group.map((ingredient) => {
+          return (
+            <ToggleButton       
+              key={ingredient.id} 
+              id={ingredient.id} 
+              value={ingredient.name} 
+              // onClick={(e) => this.addExistingIngredientToRecipe(e)} 
+              onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
+              className="m-1"
+              size="sm">
+              {ingredient.name}
+            </ToggleButton>
+            )
         })
 
         groups.push(ingredients);
@@ -116,7 +140,6 @@ class RecipeIngredients extends Component {
     const groups = this.createIngredientGroups();
 
     const ingredients = groups.map((group) => {
-        console.log(group)
         return (
           <Container>
             <Row>
@@ -128,25 +151,6 @@ class RecipeIngredients extends Component {
         )
       })
       
-    // const ingredients = this.state.ingredients.map((ingredient, index) => {
-
-      // return <ToggleButton />
-      // return (
-        // <ToggleButtonGroup type="checkbox" className="mb-2">
-        //   <ToggleButton 
-        //     key={ingredient.id} 
-        //     id={ingredient.id} 
-        //     value={ingredient.name} 
-        //     // onClick={this.addToCurrentRecipe} 
-        //     onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
-        //     className="m-1"
-        //     size="sm"
-        //   >
-        //     {ingredient.name}
-        //   </ToggleButton>
-        // </ToggleButtonGroup>
-      //   )
-    // }) 
     return(
       <div>
         <div className="container-fluid">
