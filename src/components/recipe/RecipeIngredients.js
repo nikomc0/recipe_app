@@ -27,26 +27,10 @@ class RecipeIngredients extends Component {
   }
 
   addToCurrentRecipe(event){
-    var ingredients = [...this.state.currentIngredients];
+    // Create the ingredient on the bakend.
+    api.addIngredient(this.state.newIngredient)
 
-    var value = event.target.value
-
-    if (value.length === 0) {
-      var data = api.addIngredient(this.state.newIngredient)
-
-      this.state.ingredients.forEach((x) => {
-        if (x && x.id && x.id === data) {
-          ingredients.push(this.state.ingredients[data-1].name)
-        }
-      })
-    } else {
-      var single = this.state.ingredients.find((x) => x.id === parseInt(value))
-      ingredients.push(single)
-    }
-
-    console.log(this.state.ingredients)
-
-    this.setState({currentIngredients: ingredients})
+    // Clear out the now old new ingredient.
     this.setState({newIngredient: ""})
   }
 

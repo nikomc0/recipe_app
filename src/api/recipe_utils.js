@@ -72,11 +72,14 @@ api.addIngredient = function(value){
 
 	// Increment idCounter
 	idCounter += 1
+
 	// create the ingredient object
-	Ingredients.push({id: idCounter, name: value})
+	let ingredient = {id: idCounter, name: value, addedToRecipe: true};
+
+	Ingredients.push(ingredient);
 
 	// return the full ingredient object with name and id
-	return idCounter
+	return ingredient;
 }
 
 export default api;
