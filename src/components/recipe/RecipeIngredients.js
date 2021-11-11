@@ -28,7 +28,7 @@ class RecipeIngredients extends Component {
 
   addToCurrentRecipe(event){
     // Create the ingredient on the bakend.
-    var ingredient = api.addIngredient(this.state.newIngredient)
+    api.addIngredient(this.state.newIngredient)
 
     // Clear out the now old new ingredient.
     this.setState({newIngredient: ""})
