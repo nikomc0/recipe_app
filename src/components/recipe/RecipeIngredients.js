@@ -12,11 +12,13 @@ class RecipeIngredients extends Component {
       ingredients: [],
       currentIngredients: [],
       newIngredient: "",
+      groups: []
     }
 
     this.fetchIngredients = this.fetchIngredients.bind(this);
     this.addToCurrentRecipe = this.addToCurrentRecipe.bind(this);
     this.handleIngredientChange = this.handleIngredientChange.bind(this);
+    this.createIngredientGroups = this.createIngredientGroups.bind(this);
   }
 
   componentDidMount(){
@@ -26,7 +28,10 @@ class RecipeIngredients extends Component {
       const ingredients = response.data;
       this.setState({ ingredients });
     })
-    // this.fetchIngredients();
+    .then(() => {
+      this.createIngredientGroups();
+    })
+
   }
 
   fetchIngredients(){
@@ -50,9 +55,13 @@ class RecipeIngredients extends Component {
       this.setState({ingredients: ingredients})
       // Clear out the now old new ingredient.
       this.setState({newIngredient: ""})
+      this.createIngredientGroups();
     })
     .catch((error)=>{
-       console.log(error);
+      alert(error.response.data.message);
+      console.log(error);
+      console.log(error.response.data.error)
+      console.log(error.response.data.message);
     });
   }
 
@@ -127,7 +136,7 @@ class RecipeIngredients extends Component {
         end += 9;
     }
 
-    return groups;
+    this.setState({groups: groups});
   }
 
   render(){
@@ -137,9 +146,7 @@ class RecipeIngredients extends Component {
         return <li key={ingredient.id}> {ingredient.name}</li>
       });
 
-    const groups = this.createIngredientGroups();
-
-    const ingredients = groups.map((group) => {
+    const ingredients = this.state.groups.map((group) => {
         return (
           <Container>
             <Row>
