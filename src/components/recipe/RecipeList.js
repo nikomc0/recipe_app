@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Circle, CheckCircle } from 'react-feather';
+import axios from 'axios';
 import api from '../../api/recipe_utils'
 
 class RecipeList extends Component {
@@ -24,8 +25,14 @@ class RecipeList extends Component {
 	}
 
 	fetchRecipes() {
-		var list = api.getRecipes();
-		this.setState({recipes: list})
+		axios
+		.get('http://localhost:9393/recipes')
+		.then((response) => {
+			this.setState({recipes: response.data});
+		})
+		.catch((error) => {
+			console.log(error.response.data.message);
+		})
 	}
 
 	fetchRecipeIngredients() {
