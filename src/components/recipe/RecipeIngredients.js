@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Container, Row } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
-import {ToggleButtonGroup, ToggleButton} from 'react-bootstrap'
+import {ToggleButtonGroup, ToggleButton, ButtonToolbar} from 'react-bootstrap'
+import axios from 'axios'
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class RecipeIngredients extends Component {
@@ -10,15 +12,26 @@ class RecipeIngredients extends Component {
       ingredients: [],
       currentIngredients: [],
       newIngredient: "",
+      groups: []
     }
 
     this.fetchIngredients = this.fetchIngredients.bind(this);
     this.addToCurrentRecipe = this.addToCurrentRecipe.bind(this);
     this.handleIngredientChange = this.handleIngredientChange.bind(this);
+    this.createIngredientGroups = this.createIngredientGroups.bind(this);
   }
 
   componentDidMount(){
-    this.fetchIngredients();
+    axios
+    .get(`http://localhost:9393/ingredients`)
+    .then(response => {
+      const ingredients = response.data;
+      this.setState({ ingredients });
+    })
+    .then(() => {
+      this.createIngredientGroups();
+    })
+
   }
 
   fetchIngredients(){
@@ -27,11 +40,29 @@ class RecipeIngredients extends Component {
   }
 
   addToCurrentRecipe(event){
-    // Create the ingredient on the bakend.
-    api.addIngredient(this.state.newIngredient)
+    var ingredients = [...this.state.ingredients];
+    var ingredient = {
+      'name': this.state.newIngredient,
+      'addedToRecipe' : false
+    };
 
-    // Clear out the now old new ingredient.
-    this.setState({newIngredient: ""})
+    // Create the ingredient on the bakend.
+    axios
+    .post(`http://localhost:9393/ingredients`, { ingredient }, {'Content-Type': 'text/plain'})
+    .then(response => {
+      ingredient.addedToRecipe = true;
+      ingredients.push(ingredient);
+      this.setState({ingredients: ingredients})
+      // Clear out the now old new ingredient.
+      this.setState({newIngredient: ""})
+      this.createIngredientGroups();
+    })
+    .catch((error)=>{
+      alert(error.response.data.message);
+      console.log(error);
+      console.log(error.response.data.error)
+      console.log(error.response.data.message);
+    });
   }
 
   addExistingIngredientToRecipe(ingredient) {
@@ -73,6 +104,41 @@ class RecipeIngredients extends Component {
     });
   }
 
+  createIngredientGroups() {
+    var start = 0;
+    var end   = 9;
+    var list  = this.state.ingredients;
+    var split = Math.ceil(list.length / 10);
+
+    var groups = [];
+
+    for (var i = 0; i < split; i++) {
+        var group = list.slice(start, end);
+
+        var ingredients = group.map((ingredient) => {
+          return (
+            <ToggleButton       
+              key={ingredient.id} 
+              id={ingredient.id} 
+              value={ingredient.name} 
+              // onClick={(e) => this.addExistingIngredientToRecipe(e)} 
+              onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
+              className="m-1"
+              size="sm">
+              {ingredient.name}
+            </ToggleButton>
+            )
+        })
+
+        groups.push(ingredients);
+
+        start += 9;
+        end += 9;
+    }
+
+    this.setState({groups: groups});
+  }
+
   render(){
     var currentIngredients = this.state.ingredients
       .filter((ingredient) => ingredient.addedToRecipe === true)
@@ -80,27 +146,27 @@ class RecipeIngredients extends Component {
         return <li key={ingredient.id}> {ingredient.name}</li>
       });
 
-    const ingredients = this.state.ingredients.map((ingredient) => {
-      return (
-        <ToggleButton 
-          key={ingredient.id} 
-          id={ingredient.id} 
-          value={ingredient.name} 
-          // onClick={this.addToCurrentRecipe} 
-          onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
-          className="m-1"
-        >{ingredient.name}</ToggleButton>
+    const ingredients = this.state.groups.map((group) => {
+        return (
+          <Container>
+            <Row>
+              <ToggleButtonGroup type="checkbox">
+                {group}
+              </ToggleButtonGroup>
+            </Row>
+          </Container>
         )
-    }) 
+      })
+      
     return(
       <div>
         <div className="container-fluid">
           
           <p>click ingredients to add to recipe</p>
 
-          <ToggleButtonGroup type="checkbox" className="mb-2">
+          <ButtonToolbar aria-label="Toolbar with button groups">
             {ingredients}
-          </ToggleButtonGroup>
+          </ButtonToolbar>
         </div>
 
         <div className="container" style={{'paddingTop': '50px'}}>
