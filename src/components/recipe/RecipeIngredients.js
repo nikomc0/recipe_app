@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
 import {ToggleButtonGroup, ToggleButton, ButtonToolbar} from 'react-bootstrap'
 import axios from 'axios'
@@ -32,12 +32,9 @@ class RecipeIngredients extends Component {
       axios
       .get(`http://localhost:9393/recipe/${currentRecipe}`)
       .then(response => {
-        var current = response.data.current_ingredients.map((x) => {
-          this.addExistingIngredientToRecipe(x.name);
+        response.data.current_ingredients.map((x) => {
+          return this.addExistingIngredientToRecipe(x.name);
         })
-      })
-      .then((current) => {
-        console.log(this.state);
       })
       .catch((error) => {
         alert(error.response.data.message);

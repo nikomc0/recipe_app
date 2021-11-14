@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Circle, CheckCircle, Edit2 } from 'react-feather';
-import { Dropdown, Placeholder } from 'react-bootstrap';
+import { Placeholder } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../api/recipe_utils'
@@ -139,8 +139,6 @@ class RecipeList extends Component {
 				)
 			}
 		});
-
-		let content;
 
 		if (listItems.length === 0) {
 			return (
