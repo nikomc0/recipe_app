@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
 import {ToggleButtonGroup, ToggleButton, ButtonToolbar} from 'react-bootstrap'
 import axios from 'axios'
@@ -12,7 +12,8 @@ class RecipeIngredients extends Component {
       ingredients: [],
       currentIngredients: [],
       newIngredient: "",
-      groups: []
+      groups: [],
+      currentRecipe: ""
     }
 
     this.fetchIngredients = this.fetchIngredients.bind(this);
@@ -22,6 +23,28 @@ class RecipeIngredients extends Component {
   }
 
   componentDidMount(){
+    if (this.props.location) {
+      let currentRecipe = this.props.location.state.recipe 
+      console.log("HERE IS THE RECIPE")
+      this.setState({currentRecipe: currentRecipe});
+      console.log(currentRecipe)
+
+      axios
+      .get(`http://localhost:9393/recipe/${currentRecipe}`)
+      .then(response => {
+        response.data.current_ingredients.map((x) => {
+          return this.addExistingIngredientToRecipe(x.name);
+        })
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+        console.log(error);
+        console.log(error.response.data.error)
+        console.log(error.response.data.message);
+      })
+    }
+
+
     axios
     .get(`http://localhost:9393/ingredients`)
     .then(response => {
@@ -31,7 +54,6 @@ class RecipeIngredients extends Component {
     .then(() => {
       this.createIngredientGroups();
     })
-
   }
 
   fetchIngredients(){
@@ -50,6 +72,8 @@ class RecipeIngredients extends Component {
     axios
     .post(`http://localhost:9393/ingredients`, { ingredient }, {'Content-Type': 'text/plain'})
     .then(response => {
+      console.log(response);
+      ingredient = response.data;
       ingredient.addedToRecipe = true;
       ingredients.push(ingredient);
       this.setState({ingredients: ingredients})
@@ -74,8 +98,11 @@ class RecipeIngredients extends Component {
     let ing = {...ingredients[ingredientToSet.index]};
 
     // 3. Replace the property you're intested in
-
-    ing.addedToRecipe = !ing.addedToRecipe;
+    if (!ing.addedToRecipe) {
+      ing.addedToRecipe = true;
+    } else {
+      ing.addedToRecipe = !ing.addedToRecipe;
+    }
 
     // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
     ingredients[ingredientToSet.index] = ing;
@@ -106,34 +133,33 @@ class RecipeIngredients extends Component {
 
   createIngredientGroups() {
     var start = 0;
-    var end   = 9;
+    var end   = start + 10;
     var list  = this.state.ingredients;
     var split = Math.ceil(list.length / 10);
 
     var groups = [];
 
-    for (var i = 0; i < split; i++) {
+    for (var i = 0; i <= split; i++) {
         var group = list.slice(start, end);
 
         var ingredients = group.map((ingredient) => {
           return (
-            <ToggleButton       
-              key={ingredient.id} 
-              id={ingredient.id} 
-              value={ingredient.name} 
-              // onClick={(e) => this.addExistingIngredientToRecipe(e)} 
-              onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
-              className="m-1"
-              size="sm">
-              {ingredient.name}
-            </ToggleButton>
-            )
+              <ToggleButton    
+                key={ingredient.id} 
+                id={ingredient.id} 
+                value={ingredient.name} 
+                onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
+                className="m-1 col-sm-1"
+                size="sm">
+                  {ingredient.name}
+              </ToggleButton>
+          )
         })
 
         groups.push(ingredients);
 
-        start += 9;
-        end += 9;
+        start += 10;
+        end += 10;
     }
 
     this.setState({groups: groups});
@@ -148,26 +174,22 @@ class RecipeIngredients extends Component {
 
     const ingredients = this.state.groups.map((group) => {
         return (
-          <Container>
-            <Row>
-              <ToggleButtonGroup type="checkbox">
-                {group}
-              </ToggleButtonGroup>
-            </Row>
-          </Container>
+                <ToggleButtonGroup type="checkbox" style={{width: '100%'}} className='d-flex justify-content-center'>
+                  {group}
+                </ToggleButtonGroup>
         )
       })
       
     return(
       <div>
-        <div className="container-fluid">
+        <Container fluid>
           
           <p>click ingredients to add to recipe</p>
 
           <ButtonToolbar aria-label="Toolbar with button groups">
             {ingredients}
           </ButtonToolbar>
-        </div>
+        </Container>
 
         <div className="container" style={{'paddingTop': '50px'}}>
           <div className="row">

@@ -12,6 +12,10 @@ class RecipeCreate extends Component {
 		this.handleNewRecipe = this.handleNewRecipe.bind(this);
 	}
 
+	componentDidMount() {
+		console.log(this.props.location)
+	}
+
 	handleNewRecipe(obj){
 		var recipe = obj.name
 		this.setState({recipe: recipe})
