@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
-import {ToggleButtonGroup, ToggleButton, ButtonToolbar} from 'react-bootstrap'
+import {ToggleButtonGroup, ToggleButton, ButtonToolbar, Button} from 'react-bootstrap'
 import axios from 'axios'
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -54,6 +54,22 @@ class RecipeIngredients extends Component {
     .then(() => {
       this.createIngredientGroups();
     })
+  }
+
+  saveIngredientsToRecipe() {
+    var ingredients = [];
+
+    this.state.ingredients
+    .filter((x) => x.addedToRecipe && x.addedToRecipe === true)
+    .map((x) => {
+        return ingredients.push(x);
+    });
+
+    console.log(ingredients);
+
+    axios
+    .post(`http://localhost:9393/recipe_ingredients/${this.state.currentRecipe}`, { ingredients })
+    .then(response => console.log(response));
   }
 
   fetchIngredients(){
@@ -200,6 +216,11 @@ class RecipeIngredients extends Component {
               <ul id="pendingIngredients">
                 {currentIngredients}
               </ul>
+
+              <Button
+                onClick={() => this.saveIngredientsToRecipe()}>
+                SAVE    
+              </Button>
             </div>
 
             <div className="col">
