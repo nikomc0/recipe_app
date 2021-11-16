@@ -1,85 +1,49 @@
+import axios from 'axios'
 
-const List = [
-	{id: 1, name: 'spaghetti', selected: false},
-	{id: 3, name: 'tacos', selected: false},
-	{id: 4, name: 'steak', selected: false},
-	{id: 5, name: 'fancy mac & cheese', selected: false},
-	{id: 2, name: 'turkey club', selected: false},
-	{id: 6, name: 'Slow Cooker Lemon Chicken', selected: false},
-	{id: 7, name: 'Sesame Chicken', selected: false},
-	{id: 8, name: 'Chicken Tortellini', selected: false},
-	{id: 9, name: 'Salad', selected: false},
-	{id: 10, name: 'Pizza', selected: false},
-];
-
-const Ingredients = [
-	{id: 1, name: 'salt', addedToRecipe: false},
-	{id: 2, name: 'cinammon', addedToRecipe: false},
-	{id: 3, name: 'paprika', addedToRecipe: false},
-	{id: 4, name: 'ginger', addedToRecipe: false},
-]
-
-const RecipeIngredients = [
-	{recipe_id: 1, recipe_name: 'spaghetti', ingredients: [
-			{id: 1, name: 'salt'},
-			{id: 2, name: 'cinammon'},
-			{id: 3, name: 'paprika'},
-			{id: 4, name: 'ginger'},
-		]
-	},
-	{recipe_id: 3, recipe_name: 'tacos', ingredients: [{id: 2, name: 'pepper'}]},
-	{recipe_id: 4, recipe_name: 'steak', ingredients: [{id: 3, name: 'chicken'}]},
-	{recipe_id: 5, recipe_name: 'fancy mac & cheese', ingredients: [{id: 4, name: 'ground_beef'}]},
-	{recipe_id: 2, recipe_name: 'turkey club', ingredients: [{id: 5, name: 'pizza_sauce'}]},
-	{recipe_id: 6, recipe_name: 'Slow Cooker Lemon Chicken', ingredients: [{id: 6, name: 'cheese'}]},
-	{recipe_id: 7, recipe_name: 'Sesame Chicken', ingredients: [{id: 7, name: 'broccoli'}]},
-	{recipe_id: 8, recipe_name: 'Chicken Tortellini', ingredients: [{id: 8, name: 'garlic'}]},
-	{recipe_id: 9, recipe_name: 'Salad', ingredients: [{id: 9, name: 'lettuce'}]},
-	{recipe_id: 10, recipe_name: 'Pizza', ingredients: [{id: 10, name: 'tomato'}]}
-]
+const baseURL = process.env.REACT_APP_API_BASE_URL_PROD
 
 var api = {};
 
-api.getRecipes = function(){
-	return List;
+api.getRecipes = async function(){
+	let response = await axios
+		.get(baseURL + `/recipes`);
+
+	return response;
 };
 
-api.getRecipeIngredients = function(values){
-	var ingredients = [];
+api.newRecipe = async function(newRecipe) {
+	let response = await axios
+		.post(baseURL + `/recipe`, newRecipe)
 
-	RecipeIngredients.map((x) => {
-		if (values.includes(x.recipe_id)) {
-			ingredients.push(x)
-		}
-		return ingredients
-	});
-
-	return ingredients
+	return response;
 }
 
-api.getIngredients = function(){
-	return Ingredients;
+api.getExistingRecipe = async function(currentRecipe){
+	let response = await axios
+		.get(baseURL + `/recipe/${currentRecipe}`)
+
+	return response;
 }
 
-api.addIngredient = function(value){
-	var idCounter = 0
-	// Find the last id
-	Ingredients.forEach((x) => {
-		if (x.id > idCounter) {
-			idCounter = x.id
-		}
-	});
+api.getIngredients = async function(){
+	let response = await axios
+    	.get(baseURL + `/ingredients`)
+    
+	return response;
+}
 
-	// Increment idCounter
-	idCounter += 1
+api.newIngredient = async function(newIngredient) {
+	let response = await axios
+		.post(baseURL + `/ingredients`, { newIngredient })
 
-	// create the ingredient object
-	let ingredient = {id: idCounter, name: value, addedToRecipe: true};
+	return response;
+}
 
-	Ingredients.push(ingredient);
+api.saveIngredientsToRecipe = async function(currentRecipe, ingredients){
+	let response = await axios
+    	.post(baseURL + `/recipe_ingredients/${currentRecipe}`, { ingredients })
 
-	// return the full ingredient object with name and id
-	return ingredient;
+    return response;
 }
 
 export default api;

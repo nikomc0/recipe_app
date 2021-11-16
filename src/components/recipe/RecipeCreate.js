@@ -13,12 +13,13 @@ class RecipeCreate extends Component {
 	}
 
 	componentDidMount() {
-		console.log(this.props.location)
+		console.log(this.state)
 	}
 
 	handleNewRecipe(obj){
 		var recipe = obj.name
-		this.setState({recipe: recipe})
+
+		this.setState({...this.state.recipe, recipe})
 	}
 
 	render(){
@@ -37,7 +38,7 @@ class RecipeCreate extends Component {
 					{ this.state.recipe === '' ?
 						<RecipeForm newRecipe={this.handleNewRecipe}/>
 						:
-						<RecipeIngredients />
+						<RecipeIngredients recipe={this.state}/>
 					}
 				</div>
 			</div>

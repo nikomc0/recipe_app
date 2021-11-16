@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
 import api from '../../api/recipe_utils';
 import {ToggleButtonGroup, ToggleButton, ButtonToolbar, Button} from 'react-bootstrap'
-import axios from 'axios'
 import "bootstrap/dist/css/bootstrap.min.css";
 
 class RecipeIngredients extends Component {
@@ -23,14 +22,36 @@ class RecipeIngredients extends Component {
   }
 
   componentDidMount(){
+    // Current/Existing Recipe
     if (this.props.location) {
       let currentRecipe = this.props.location.state.recipe 
-      console.log("HERE IS THE RECIPE")
-      this.setState({currentRecipe: currentRecipe});
-      console.log(currentRecipe)
 
-      axios
-      .get(`http://localhost:9393/recipe/${currentRecipe}`)
+      this.setState({currentRecipe: currentRecipe});
+
+      this.fetchExistingRecipe(currentRecipe);
+    }
+
+    // Create a new recipe
+    if (this.props.recipe) {
+      let newRecipe = this.props.recipe;
+
+      this.createNewRecipe(newRecipe)
+    }
+
+    // Fetch Ingredients
+    this.fetchIngredients();
+  }
+
+  createNewRecipe(newRecipe) {
+    api.newRecipe(newRecipe)
+      .then((response) => {
+        this.setState({...this.state.currentRecipe, response})   
+      })
+      .catch((error) => console.log(error));
+  }
+
+  fetchExistingRecipe(currentRecipe) {
+      api.getExistingRecipe(currentRecipe)
       .then(response => {
         response.data.current_ingredients.map((x) => {
           return this.addExistingIngredientToRecipe(x.name);
@@ -42,11 +63,27 @@ class RecipeIngredients extends Component {
         console.log(error.response.data.error)
         console.log(error.response.data.message);
       })
-    }
+  }
 
+  saveIngredientsToRecipe() {
+    var ingredients = [];
 
-    axios
-    .get(`http://localhost:9393/ingredients`)
+    this.state.ingredients
+      .filter((x) => x.addedToRecipe && x.addedToRecipe === true)
+      .map((x) => {
+        return ingredients.push(x);
+      });
+
+    let currentRecipe = this.state.currentRecipe;
+
+    console.log(ingredients);
+
+    api.saveIngredientsToRecipe(currentRecipe, ingredients)
+      .then(response => console.log(response));
+  }
+
+  fetchIngredients(){
+    api.getIngredients()
     .then(response => {
       const ingredients = response.data;
       this.setState({ ingredients });
@@ -54,27 +91,6 @@ class RecipeIngredients extends Component {
     .then(() => {
       this.createIngredientGroups();
     })
-  }
-
-  saveIngredientsToRecipe() {
-    var ingredients = [];
-
-    this.state.ingredients
-    .filter((x) => x.addedToRecipe && x.addedToRecipe === true)
-    .map((x) => {
-        return ingredients.push(x);
-    });
-
-    console.log(ingredients);
-
-    axios
-    .post(`http://localhost:9393/recipe_ingredients/${this.state.currentRecipe}`, { ingredients })
-    .then(response => console.log(response));
-  }
-
-  fetchIngredients(){
-    var ingredients = api.getIngredients();
-    this.setState({ingredients})
   }
 
   addToCurrentRecipe(event){
@@ -85,8 +101,7 @@ class RecipeIngredients extends Component {
     };
 
     // Create the ingredient on the bakend.
-    axios
-    .post(`http://localhost:9393/ingredients`, { ingredient }, {'Content-Type': 'text/plain'})
+    api.newIngredient()
     .then(response => {
       console.log(response);
       ingredient = response.data;

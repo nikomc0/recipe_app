@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Circle, CheckCircle, Edit2 } from 'react-feather';
 import { Placeholder } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import api from '../../api/recipe_utils'
 
 class RecipeList extends Component {
@@ -27,8 +26,7 @@ class RecipeList extends Component {
 	}
 
 	fetchRecipes() {
-		axios
-		.get('http://localhost:9393/recipes')
+		api.getRecipes()
 		.then((response) => {
 			this.setState({recipes: response.data});
 		})

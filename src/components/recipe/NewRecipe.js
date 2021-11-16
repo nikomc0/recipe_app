@@ -28,8 +28,8 @@ class RecipeForm extends Component {
   }
 
   handleSubmit(event) {
+    debugger;
     this.props.newRecipe(this.state)
-    this.setState({redirectToReferrer: !this.state.redirectToReferrer})
 
     event.preventDefault();
   }
@@ -37,7 +37,14 @@ class RecipeForm extends Component {
   render() {
     const redirectToReferrer = this.state.redirectToReferrer;
       if (redirectToReferrer) {
-      return <Redirect to="/new-recipe" />
+      return (
+        <Redirect 
+          to={{
+            pathname: `/new-new`, 
+            state: {recipe: this.state}
+          }}
+        />
+      )
     }
 
     return (

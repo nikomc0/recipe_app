@@ -19,6 +19,10 @@ function App() {
           <RecipeCreate />
         </Route>
         <Route
+          path="/new-new"
+          component={RecipeIngredients}>
+        </Route>
+        <Route
           path="/:recipe"
           component={RecipeIngredients}>
         </Route>
