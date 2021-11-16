@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, HashRouter } from "react-router-dom"
+import { Route, Switch, withRouter } from "react-router-dom"
 import Main from './components/Main'
 import RecipeCreate from './components/recipe/RecipeCreate'
 import Nav from './components/Nav'
@@ -34,4 +34,4 @@ function App() {
   );
 }
 
-export default HashRouter(App);
+export default withRouter(App);
