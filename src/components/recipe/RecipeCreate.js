@@ -38,7 +38,14 @@ class RecipeCreate extends Component {
 	handleNewRecipe(obj){
 		var recipe = obj.name
 
-		this.setState({...this.state.recipe, recipe})
+		this.setState({isFetchingIngredients: !this.state.isFetchingIngredients});
+
+		api.newRecipe(recipe)
+		.then(response => {
+			console.log(response)
+			this.setState({recipe: response.data})
+			this.setState({isFetchingIngredients: !this.state.isFetchingIngredients});
+		})
 	}
 
 	fetchExistingRecipe(){
@@ -85,12 +92,16 @@ class RecipeCreate extends Component {
 		}
 
 		let content = this.getContent();
-		// let recipeName = this.getRecipeName();
+
+		let recipeName;
+		if (this.state.recipe && this.state.recipe.name != null) {
+			recipeName = this.state.recipe.name;
+		}
 
 		return (
 			<div className="container-fluid" style={{marginTop: '20px'}}>
 
-				{/*{recipeName}*/}
+				<h4>{recipeName}</h4>
 
 				<div>
 					{ 

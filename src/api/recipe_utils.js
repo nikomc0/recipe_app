@@ -1,6 +1,12 @@
 import axios from 'axios'
 
-const baseURL = process.env.REACT_APP_API_BASE_URL_PROD
+let baseURL;
+
+if (process.env.REACT_APP_ENV === 'development') {
+	baseURL  = process.env.REACT_APP_API_BASE_URL_DEV
+} else {
+	baseURL = process.env.REACT_APP_API_BASE_URL_PROD
+}
 
 var api = {};
 
@@ -13,7 +19,7 @@ api.getRecipes = function(){
 
 api.newRecipe = async function(newRecipe) {
 	let response = await axios
-		.post(baseURL + `/recipe`, newRecipe)
+		.post(baseURL + `/recipe`, {recipe: newRecipe})
 
 	return response;
 }

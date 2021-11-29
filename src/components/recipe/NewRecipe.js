@@ -28,6 +28,7 @@ class RecipeForm extends Component {
   }
 
   handleSubmit(event) {
+    debugger;
     this.props.newRecipe(this.state)
 
     event.preventDefault();

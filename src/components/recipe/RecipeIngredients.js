@@ -18,7 +18,7 @@ class RecipeIngredients extends Component {
       currentIngredients: this.props.data.current_ingredients || RecipeIngredients.defaultProps.currentIngredients,
       groups: [],
       newIngredient: "",
-      currentRecipe: this.props.data.recipe.id || RecipeIngredients.defaultProps.currentRecipe,
+      currentRecipe: this.props.data.recipe || RecipeIngredients.defaultProps.currentRecipe,
     }
 
     this.addToCurrentRecipe 	         = this.addToCurrentRecipe.bind(this);
@@ -59,7 +59,6 @@ class RecipeIngredients extends Component {
 
   // Takes all pending ingredients and saves them to the database.
   saveIngredientsToRecipe() {
-    debugger;
     var ingredients = [];
 
     this.state.ingredients
@@ -125,7 +124,6 @@ class RecipeIngredients extends Component {
   }
 
   addExistingIngredientToRecipe(ingredient) {
-    debugger;
     var ingredientToSet = utils.findIngredient(this.state.ingredients, ingredient);
 
     if (ingredientToSet) {
