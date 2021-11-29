@@ -1,45 +1,52 @@
 import React, { Component } from 'react';
-import { Container } from 'react-bootstrap';
-import api from '../../api/recipe_utils';
-import {ToggleButtonGroup, ToggleButton, ButtonToolbar, Button} from 'react-bootstrap'
+import {ToggleButtonGroup, ToggleButton, Button} from 'react-bootstrap'
+import Ingredients from '../IngredientsList';
+import CurentIngredients from '../CurrentIngredients';
+import AddIngredient from '../AddIngredient';
+import Spinner from 'react-bootstrap/Spinner';
+
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import api from '../../api/recipe_utils';
+import utils from '../../utils/ingredients';
 
 class RecipeIngredients extends Component {
   constructor(props){
     super(props)
     this.state = {
-      ingredients: [],
-      currentIngredients: [],
-      newIngredient: "",
+      ingredients: this.props.data.ingredients || RecipeIngredients.defaultProps.ingredients,
+      currentIngredients: this.props.data.current_ingredients || RecipeIngredients.defaultProps.currentIngredients,
       groups: [],
-      currentRecipe: ""
+      newIngredient: "",
+      currentRecipe: this.props.data.recipe.id || RecipeIngredients.defaultProps.currentRecipe,
     }
 
-    this.fetchIngredients = this.fetchIngredients.bind(this);
-    this.addToCurrentRecipe = this.addToCurrentRecipe.bind(this);
-    this.handleIngredientChange = this.handleIngredientChange.bind(this);
-    this.createIngredientGroups = this.createIngredientGroups.bind(this);
+    this.addToCurrentRecipe 	         = this.addToCurrentRecipe.bind(this);
+    this.createIngredientGroups        = this.createIngredientGroups.bind(this);
+    this.addExistingIngredientToRecipe = this.addExistingIngredientToRecipe.bind(this);
+    this.currentIngredientsList        = this.currentIngredientsList.bind(this);
+    this.setIngredient                 = this.setIngredient.bind(this);
   }
 
-  componentDidMount(){
-    // Current/Existing Recipe
-    if (this.props.location) {
-      let currentRecipe = this.props.location.state.recipe 
+  componentDidMount() {
+    console.log(this.state);
 
-      this.setState({currentRecipe: currentRecipe});
-
-      this.fetchExistingRecipe(currentRecipe);
+    if (Object.keys(this.state.ingredients).length === 0) {
+      console.warn("Need to fetch ingredients.")
     }
 
     // Create a new recipe
     if (this.props.recipe) {
-      let newRecipe = this.props.recipe;
+  		let newRecipe = this.props.recipe;
 
-      this.createNewRecipe(newRecipe)
+  		this.createNewRecipe(newRecipe)
     }
 
-    // Fetch Ingredients
-    this.fetchIngredients();
+    // Segment out ingredients into groups
+    this.createIngredientGroups();
+
+    // Set currentIngredients to addedToRecipe in IngredientsList
+    this.currentIngredientsList();
   }
 
   createNewRecipe(newRecipe) {
@@ -50,22 +57,9 @@ class RecipeIngredients extends Component {
       .catch((error) => console.log(error));
   }
 
-  fetchExistingRecipe(currentRecipe) {
-      api.getExistingRecipe(currentRecipe)
-      .then(response => {
-        response.data.current_ingredients.map((x) => {
-          return this.addExistingIngredientToRecipe(x.name);
-        })
-      })
-      .catch((error) => {
-        alert(error.response.data.message);
-        console.log(error);
-        console.log(error.response.data.error)
-        console.log(error.response.data.message);
-      })
-  }
-
+  // Takes all pending ingredients and saves them to the database.
   saveIngredientsToRecipe() {
+    debugger;
     var ingredients = [];
 
     this.state.ingredients
@@ -76,40 +70,27 @@ class RecipeIngredients extends Component {
 
     let currentRecipe = this.state.currentRecipe;
 
-    console.log(ingredients);
+    // console.log(ingredients);
 
     api.saveIngredientsToRecipe(currentRecipe, ingredients)
       .then(response => console.log(response));
   }
 
-  fetchIngredients(){
-    api.getIngredients()
-    .then(response => {
-      const ingredients = response.data;
-      this.setState({ ingredients });
-    })
-    .then(() => {
-      this.createIngredientGroups();
-    })
-  }
-
-  addToCurrentRecipe(event){
+  addToCurrentRecipe(value){
     var ingredients = [...this.state.ingredients];
     var ingredient = {
-      'name': this.state.newIngredient,
+      'name': value,
       'addedToRecipe' : false
     };
 
-    // Create the ingredient on the bakend.
-    api.newIngredient()
+    // Create the ingredient on the backend.
+    api.newIngredient(ingredient)
     .then(response => {
-      console.log(response);
+      // console.log(response);
       ingredient = response.data;
       ingredient.addedToRecipe = true;
       ingredients.push(ingredient);
       this.setState({ingredients: ingredients})
-      // Clear out the now old new ingredient.
-      this.setState({newIngredient: ""})
       this.createIngredientGroups();
     })
     .catch((error)=>{
@@ -120,49 +101,45 @@ class RecipeIngredients extends Component {
     });
   }
 
-  addExistingIngredientToRecipe(ingredient) {
-    var ingredientToSet = this.findIngredient(this.state.ingredients, ingredient);
+  setIngredient(ingredientToSet) {
     // 1. Make a shallow copy of the items
     let ingredients = [...this.state.ingredients];
 
-    // 2. Make a shallow copy of the item you want to mutate
-    let ing = {...ingredients[ingredientToSet.index]};
+    if (ingredientToSet) {
+      // 2. Make a shallow copy of the item you want to mutate
+      let ingredient = {...ingredients[ingredientToSet.index]};
 
-    // 3. Replace the property you're intested in
-    if (!ing.addedToRecipe) {
-      ing.addedToRecipe = true;
-    } else {
-      ing.addedToRecipe = !ing.addedToRecipe;
-    }
-
-    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-    ingredients[ingredientToSet.index] = ing;
-
-    // 5. Set the state to our new copy
-    this.setState({ingredients});
-  }
-
-  findIngredient(array, ingredient) {
-    let value;
-    let index;
-
-    array.forEach((x, i) => {
-      if (x && x.id && x.name === ingredient) {
-        value = x;
-        index = i;
+      // 3. Replace the property you're intested in
+      if (!ingredient.addedToRecipe) {
+        ingredient.addedToRecipe = true;
+      } else {
+        ingredient.addedToRecipe = !ingredient.addedToRecipe;
       }
-    })
 
-    return {value, index}
+      // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+      ingredients[ingredientToSet.index] = ingredient;
+
+      // 5. Set the state to our new copy
+      this.setState({ingredients});
+    }
   }
 
-  handleIngredientChange(event) {
-    this.setState({
-      newIngredient: event.target.value
-    });
+  addExistingIngredientToRecipe(ingredient) {
+    debugger;
+    var ingredientToSet = utils.findIngredient(this.state.ingredients, ingredient);
+
+    if (ingredientToSet) {
+      this.setIngredient(ingredientToSet);
+    } else {
+      console.warn("Couldn't set ingredient")
+    }
   }
 
   createIngredientGroups() {
+    if (Object.keys(this.state.ingredients).length === 0) {
+      return;
+    }
+
     var start = 0;
     var end   = start + 10;
     var list  = this.state.ingredients;
@@ -179,6 +156,7 @@ class RecipeIngredients extends Component {
                 key={ingredient.id} 
                 id={ingredient.id} 
                 value={ingredient.name} 
+                onClick={(e) => this.addExistingIngredientToRecipe(e.currentTarget.innerText)}
                 onChange={(e) => this.addExistingIngredientToRecipe(e.currentTarget.value)}
                 className="m-1 col-sm-1"
                 size="sm">
@@ -196,66 +174,82 @@ class RecipeIngredients extends Component {
     this.setState({groups: groups});
   }
 
-  render(){
-    var currentIngredients = this.state.ingredients
-      .filter((ingredient) => ingredient.addedToRecipe === true)
-      .map((ingredient) => {
-        return <li key={ingredient.id}> {ingredient.name}</li>
-      });
+  currentIngredientsList() {
+  	var currentIngredients;
+    var data = this.props.data.current_ingredients;
 
-    const ingredients = this.state.groups.map((group) => {
-        return (
-                <ToggleButtonGroup type="checkbox" style={{width: '100%'}} className='d-flex justify-content-center'>
-                  {group}
-                </ToggleButtonGroup>
-        )
-      })
+    if (Object.keys(this.state.currentIngredients).length > 0) {
+
+      data.forEach((x) => {
+        var ingredient = utils.findIngredient(this.state.ingredients, x.name);
+        ingredient.x.addedToRecipe = true;
+
+        console.log(ingredient.x)
+
+      });
+    }
+
+  	return currentIngredients;
+  }
+
+  ingredientsList() {
+  	var data = this.state.groups;
+
+  	data.map((group) => {
+		return (
+			<ToggleButtonGroup type="checkbox" style={{width: '100%'}} className='d-flex justify-content-center'>
+				{group}
+			</ToggleButtonGroup>
+		)
+	});
+
+	return data;
+  }
+
+  render(){
+    let ingredients = this.ingredientsList();
       
     return(
       <div>
-        <Container fluid>
-          
-          <p>click ingredients to add to recipe</p>
 
-          <ButtonToolbar aria-label="Toolbar with button groups">
-            {ingredients}
-          </ButtonToolbar>
-        </Container>
+      { 
+        this.state.ingredients.length > 0 ? 
+          <Ingredients ingredients={ingredients} />
+        :
+          <Spinner animation="border" />
+      }
 
         <div className="container" style={{'paddingTop': '50px'}}>
           <div className="row">
             <div className="col">
-
-              <p>Current Ingredients</p>
-
-              <ul id="pendingIngredients">
-                {currentIngredients}
-              </ul>
-
-              <Button
-                onClick={() => this.saveIngredientsToRecipe()}>
-                SAVE    
-              </Button>
+          
+          	<CurentIngredients 
+          		currentIngredients={this.state.ingredients} 
+          		saveIngredientsToRecipe={this.saveIngredientsToRecipe}
+          	/>
+            <Button
+              onClick={() => this.saveIngredientsToRecipe()}>
+              SAVE    
+            </Button>
             </div>
 
-            <div className="col">
-              <div className="row">
-                <p>Ingredient not listed? Add it manually</p>
-              </div>
-              <div className="row">
-                <div className="col">
-                  <input id="ingredientToAdd" type="text" name="ingredient" value={this.state.newIngredient} onChange={this.handleIngredientChange}></input>
-                </div>
-                <div className="col">
-                  <button className="btn btn-light" onClick={this.addToCurrentRecipe}>ADD</button>
-                </div>
-              </div>
-            </div>
+          	<AddIngredient 
+          		newIngredient={this.state.newIngredient} 
+          		handleIngredientChange={this.handleIngredientChange} 
+          		addToCurrentRecipe={this.addToCurrentRecipe}
+          	/>
           </div>
         </div>
       </div>
     )
   }
 }
+
+RecipeIngredients.defaultProps = {
+  ingredients: [1,2,3],
+  currentIngredients: [],
+  currentRecipe: "",
+};
+
 
 export default RecipeIngredients;

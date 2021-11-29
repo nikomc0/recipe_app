@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class IngredientButton extends Component {
+class IngredientButton extends React.Component {
 	render(){
 		let button = (
 			<>
