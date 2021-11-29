@@ -4,11 +4,11 @@ import Main from './components/Main'
 import RecipeCreate from './components/recipe/RecipeCreate'
 import Nav from './components/Nav'
 import NewRecipe from './components/recipe/NewRecipe'
-import RecipeIngredients from './components/recipe/RecipeIngredients'
 
 import './App.css';
 
-function App() {
+class App extends React.Component {
+  render(){
   return (
     <div className="App-header">
       <Nav />
@@ -19,19 +19,15 @@ function App() {
           <RecipeCreate />
         </Route>
         <Route
-          path="/new-new"
-          component={RecipeIngredients}>
-        </Route>
-        <Route
           path="/:recipe"
-          component={RecipeIngredients}>
+          component={RecipeCreate}>
         </Route>
         <Route path="/">
           <Main />
         </Route>
       </Switch>
     </div>
-  );
+  )};
 }
 
 export default withRouter(App);

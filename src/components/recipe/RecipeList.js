@@ -125,8 +125,12 @@ class RecipeList extends Component {
 									</div>
 									<div className="col-2">
 										<Link to={{
-											pathname: `/${recipe.name}`, 
-											state: {recipe: recipe.id}
+											pathname: `/${recipe.id}`, 
+											state: {recipe: {
+												id: recipe.id,
+												name: recipe.name
+												}
+											}
 										}}>
 											<Edit2 style={{color:'black'}} size={18}/>
 										</Link>

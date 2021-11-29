@@ -1,11 +1,11 @@
 import axios from 'axios'
 
-const baseURL = 'https://fam-recipe-api.herokuapp.com'
+const baseURL = process.env.REACT_APP_API_BASE_URL_DEV
 
 var api = {};
 
-api.getRecipes = async function(){
-	let response = await axios
+api.getRecipes = function(){
+	let response = axios
 		.get(baseURL + `/recipes`);
 
 	return response;
@@ -33,8 +33,10 @@ api.getIngredients = async function(){
 }
 
 api.newIngredient = async function(newIngredient) {
+	// server is expecting 'ingredient' i.e. params['ingredient']['name']
+	let ingredient = newIngredient
 	let response = await axios
-		.post(baseURL + `/ingredients`, { newIngredient })
+		.post(baseURL + `/ingredients`, { ingredient })
 
 	return response;
 }
