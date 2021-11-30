@@ -54,4 +54,11 @@ api.saveIngredientsToRecipe = async function(currentRecipe, ingredients){
     return response;
 }
 
+api.getRecipeIngredients = async function(selectedRecipes) {
+	let response = await axios
+		.post(baseURL + `/recipe_ingredients`, { selectedRecipes });
+
+	return response;
+}
+
 export default api;
