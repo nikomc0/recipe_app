@@ -42,8 +42,11 @@ class RecipeList extends Component {
 			return values.push(x.id)
 		})
 
-		var ingredientsList = api.getRecipeIngredients(values);
-		this.setIngredients(ingredientsList);
+		api.getRecipeIngredients(values)
+		.then((response => {
+			console.log(response);
+			this.props.setIngredients(response.data);
+		}));
 	}
 
 	selectRecipe(id, event) {

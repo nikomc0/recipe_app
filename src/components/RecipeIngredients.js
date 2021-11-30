@@ -3,24 +3,25 @@ import IngredientCard from "./IngredientCard";
 
 class RecipeIngredients extends Component {
     componentDidMount() {
-        // this.parseIngredients();
+        console.log(this);
     }
 
     render() {
         let recipeAlert;
+
         if (this.props.selectedIngredients.length === 0) {
             recipeAlert = <div className="alert alert-warning w-50" role="alert">
                 Please Select A Recipe.
             </div>
         }
 
-        const recipes = this.props.selectedIngredients.map((recipe) => {
+        const recipes = this.props.selectedIngredients.map((item) => {
             return (
                 <IngredientCard
-                    key={recipe.id}
-                    id={recipe.id}
-                    ingredients={recipe.ingredients}
-                    recipeName={recipe.recipe_name}
+                    key={item.recipe.id}
+                    id={item.recipe.id}
+                    ingredients={item.recipe_ingredients}
+                    recipeName={item.recipe.name}
                 />
             );
         });

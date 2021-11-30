@@ -21,14 +21,9 @@ class Recipes extends React.Component {
 	}
 
 	handleIngredients(ingredients){
-		this.createRecipe();
-
 		this.setState({
 			ingredientsList: ingredients,
 		});
-	}
-
-	createRecipe(){
 	}
 
 	render(){
