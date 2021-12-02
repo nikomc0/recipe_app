@@ -4,6 +4,7 @@ import Ingredients from '../IngredientsList';
 import CurentIngredients from '../CurrentIngredients';
 import AddIngredient from '../AddIngredient';
 import Spinner from 'react-bootstrap/Spinner';
+import Alert from '../Alert';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -19,6 +20,7 @@ class RecipeIngredients extends Component {
       groups: [],
       newIngredient: "",
       currentRecipe: this.props.data.recipe || RecipeIngredients.defaultProps.currentRecipe,
+      msg: ""
     }
 
     this.addToCurrentRecipe 	         = this.addToCurrentRecipe.bind(this);
@@ -65,7 +67,20 @@ class RecipeIngredients extends Component {
     let currentRecipe = this.state.currentRecipe;
 
     api.saveIngredientsToRecipe(currentRecipe, ingredients)
-      .then(response => console.log(response));
+      .then(response => {
+        this.setState({msg: "Recipe has been updated."});
+      })
+      .then(() => {
+        setTimeout(() => {
+          this.setState({msg: ""})
+        }, 3000);
+      })
+      .catch((error) => {
+        this.setState({msg: "Error saving recipe, please try again."});
+        setTimeout(() => {
+          this.setState({msg: ""})
+        }, 3000);
+      });
   }
 
   addToCurrentRecipe(value){
@@ -78,7 +93,6 @@ class RecipeIngredients extends Component {
     // Create the ingredient on the backend.
     api.newIngredient(ingredient)
     .then(response => {
-      // console.log(response);
       ingredient = response.data;
       ingredient.addedToRecipe = true;
       ingredients.push(ingredient);
@@ -202,18 +216,17 @@ class RecipeIngredients extends Component {
       
     return(
       <div>
-
-      { 
-        this.state.ingredients.length > 0 ? 
-          <Ingredients ingredients={ingredients} />
-        :
-          <Spinner animation="border" />
-      }
+        { 
+          this.state.ingredients.length > 0 
+          ? <Ingredients ingredients={ingredients} />
+          : <Spinner animation="border" />
+        }
 
         <div className="container" style={{'paddingTop': '50px'}}>
+          <Alert msg={this.state.msg} />
           <div className="row">
             <div className="col">
-          
+
           	<CurentIngredients 
           		currentIngredients={this.state.ingredients} 
           		saveIngredientsToRecipe={this.saveIngredientsToRecipe}
