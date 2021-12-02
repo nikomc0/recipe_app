@@ -48,8 +48,9 @@ api.newIngredient = async function(newIngredient) {
 }
 
 api.saveIngredientsToRecipe = async function(currentRecipe, ingredients){
+	// ingredients = JSON.stringify(ingredients)
 	let response = await axios
-    	.post(baseURL + `/recipe_ingredients/${currentRecipe}`, { ingredients })
+    	.post(baseURL + `/recipe_ingredients/${currentRecipe.id}`, { ingredients })
 
     return response;
 }
