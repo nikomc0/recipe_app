@@ -52,12 +52,7 @@ class RecipeForm extends Component {
         <div className="col-4">
           <div className="mb-3">
             <label htmlFor="recipeName" className="form-label">Name</label>
-            <input type="text" className="form-control" id="recipeName" value={this.state.name} onChange={this.handleNameChange}/>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="recipeTime" className="form-label">Time to make recipe</label>
-            <input type="text" className="form-control" id="recipeTime" aria-describedby="recipeTimeHelp" value={this.state.time} onChange={this.handleTimeChange}/>
-            <div id="recipeTimeHelp" className="form-text"><h6>Time in hrs.</h6></div>
+            <input type="text" className="form-control" id="recipeName" placeholder="ex. Spaghetti" value={this.state.name} onChange={this.handleNameChange}/>
           </div>
           <button type="submit" value="Submit" className="btn btn-primary">Submit</button>
         </div>
