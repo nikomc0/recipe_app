@@ -73,7 +73,13 @@ class RecipeIngredients extends Component {
       .then(() => {
         setTimeout(() => {
           this.setState({msg: ""})
-        }, 5000);
+        }, 3000);
+      })
+      .catch((error) => {
+        this.setState({msg: "Error saving recipe, please try again."});
+        setTimeout(() => {
+          this.setState({msg: ""})
+        }, 3000);
       });
   }
 
@@ -87,7 +93,6 @@ class RecipeIngredients extends Component {
     // Create the ingredient on the backend.
     api.newIngredient(ingredient)
     .then(response => {
-      // console.log(response);
       ingredient = response.data;
       ingredient.addedToRecipe = true;
       ingredients.push(ingredient);
