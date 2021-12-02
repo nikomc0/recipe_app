@@ -59,17 +59,11 @@ class RecipeIngredients extends Component {
 
   // Takes all pending ingredients and saves them to the database.
   saveIngredientsToRecipe() {
-    var ingredients = [];
-
-    this.state.ingredients
-      .filter((x) => x.addedToRecipe && x.addedToRecipe === true)
-      .map((x) => {
-        return ingredients.push(x);
-      });
+    debugger;
+    var ingredients = this.state.ingredients
+      .filter((x) => x.addedToRecipe && x.addedToRecipe === true);
 
     let currentRecipe = this.state.currentRecipe;
-
-    // console.log(ingredients);
 
     api.saveIngredientsToRecipe(currentRecipe, ingredients)
       .then(response => console.log(response));
